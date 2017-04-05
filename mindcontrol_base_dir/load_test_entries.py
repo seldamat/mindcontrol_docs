@@ -1,29 +1,23 @@
+#!/usr/bin/env python
 from glob import glob
 import numpy as np
-import os
-# Run this from the mind control base directory
+
 def get_collection(port=3001):
     from pymongo import MongoClient
     client = MongoClient("localhost", port)
-    db = client.meteor
+    db =  client.meteor
     collection = db.subjects
     return collection, client
 
 coll, cli = get_collection()
-# For each volume and subject iter and build the filename and update JSON
-subjects = glob("sub*") # this globs finds the relative paths
-volumes = ["brainmask.nii.gz","wm.nii.gz","aparc+aseg.nii.gz"]
-for s in subjects:
-    for v in volumes:
-        t1=os.path.join(s,'T1.nii.gz')
-        f=os.path.join(s,v)        
-        entry_str=v.replace(".nii.gz",'').replace('+','')
-        entry = {"entry_type":entry_str} # brainmask/aparc+aseg/wm
-        if not coll.find({"subject_id":s,"entry_type":entry_str}).count():        
-            print("adding", f)
-            #"metrics":{"GMV": np.random.rand(), # metrics to be updated later
-                #          "WMV": np.random.rand()}}
-            entry["subject_id"] = s #need to be unique, subject exam id, fs id
-            entry["name"] = s #needs to be uniquem, fs id
-            entry["check_masks"] = [t1,f] # list of [T1, brainmask/wm/aparc+aseg]
-            coll.insert_one(entry)
+files = glob("sub*/anat/sub*_T1w.nii.gz")
+
+for f in files:
+    entry = {"entry_type":"test", # this is what we use to filter items into different tables in the UI. Instead of test, you can give it a meaningful name, like "raw_data" or "segmentation_file"
+             "metrics":{"GMV": np.random.rand()*100, #these are random numbers, but you could load whatever you want here
+             "WMV": np.random.rand()*100}}
+    Sid = f.split('/')[0] #getting subject ID from the filename
+    entry["subject_id"] = Sid
+    entry["name"] = Sid
+    entry["check_masks"] = [f] #list of paths to files relative to /base/directory
+    coll.insert_one(entry) #finally, insert an entry to the mongo database
