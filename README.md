@@ -31,10 +31,27 @@ You should see the default entries loaded into the mindcontrol database. It shou
 
     ![](images/mindcontrol_install_init.png)
 
-
-
-
 Here we see the "Exams" and "Freesurfer" modules. We are going to add a new module called "Test". First, we need to prepare our data
+
+
+## Creating a Python environment
+
+You can use [conda](https://conda.io/docs/index.html) to create a conda environment that contains the required packages.
+
+1. Change your working directory to the git repository you cloned in the  last step.
+
+    ```bash
+    cd mindcontrol
+    ```
+
+2. If  you do not already have conda on your system, [install it](https://conda.io/miniconda.html).
+
+3. Use conda to create and activate the environment:
+
+    ```bash
+    conda env create -f mindcontrol_env.yml
+    source activate mindcontrol_env
+    ```
 
 ## Preparing and Serving Data
 
